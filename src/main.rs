@@ -5,7 +5,7 @@ use std::io;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-
+use std::process;
 
 fn delay(millis: u64) {
     let timeout = time::Duration::from_millis(millis);
@@ -19,21 +19,26 @@ fn main() {
     print!("{}[2J", 27 as char);
     loop{
         //Display Message 
-        println!("RUST Process CPU Utilization");
-        println!("Please Enter a Process ID: ");
+        println!("RUST Process CPU utilization");
+        println!("Please Enter a Process ID (Leave Blank to Monitor this application): ");
 
         //Get User Input For PID
         let mut input_text = String::new();
         io::stdin()
             .read_line(&mut input_text)
             .expect("failed to read from stdin");
+
+        if input_text.len()<2 {
+            println!("My pid is {}", process::id());
+            input_text = process::id().to_string();
+        }
         let trimmed = input_text.trim();
         match trimmed.parse::<u32>() {
             //Check if the Input is Valid UnSigned 32 
-            Ok(pid) => {println!("your PID input: {}", pid);
+            Ok(pid) => {println!("PID input: {}", pid);
             //If the Process Doesn't Exist the program panics
             let mut pid_proc = Process::new(pid).expect("Failed accessing process");
-            println!("Collecting CPU Utilization Data for {:.100}",pid_proc.name().unwrap());
+            println!("Collecting CPU utilization Data for {:.100}",pid_proc.name().unwrap());
             
             //Create a File to Write Output to
             let local: DateTime<Local> = Local::now();      
@@ -47,7 +52,7 @@ fn main() {
                 Ok(file) => file,
             };
             //Create File Header with process Name
-            if let Err(e) = writeln!(file, "CPU Utilization Data for {:.100}",pid_proc.name().unwrap()) {
+            if let Err(e) = writeln!(file, "CPU utilization Data for {:.100}",pid_proc.name().unwrap()) {
                 println!("Couldn't write to file: {}", e);
             }
             println!("Wrting to file {}", display);

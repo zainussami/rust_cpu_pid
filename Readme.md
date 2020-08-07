@@ -24,3 +24,12 @@ chrono = "0.4"
 ```bash
 cargo run
 ```
+Once the console application starts, Enter a PID to monitor or leave blank and press enter to monitor the current process.
+
+```bash
+RUST Process CPU utilization
+Please Enter a Process ID (Leave Blank to Monitor this application): 
+```
+
+Data is written to file data/<pid>_<time_stamp>.txt
+
