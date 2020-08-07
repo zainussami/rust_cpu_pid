@@ -1,0 +1,8 @@
+CPU Utilization Data for com.docker.hyper
+CPU%:8.30  TimeStamp:"2020-08-07T00:44:20"
+CPU%:6.73  TimeStamp:"2020-08-07T00:44:21"
+CPU%:10.30  TimeStamp:"2020-08-07T00:44:22"
+CPU%:9.40  TimeStamp:"2020-08-07T00:44:23"
+CPU%:8.87  TimeStamp:"2020-08-07T00:44:24"
+CPU%:9.24  TimeStamp:"2020-08-07T00:44:25"
+CPU%:9.45  TimeStamp:"2020-08-07T00:44:26"
