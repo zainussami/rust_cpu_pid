@@ -31,9 +31,9 @@ RUST Process CPU utilization
 Please Enter a Process ID (Leave Blank to Monitor this application): 
 ```
 
-Data is written to file data/<pid>_<time_stamp>.txt
+Data is written to file data/pid_time_stamp.txt
 
 ## Data Format
 
-CPU utilization Data for <process_name>
-CPU%:<utilization_percentage>  TimeStamp:<time_stamp>
+CPU utilization Data for process_name <br/>
+CPU%: utilization_percentage  TimeStamp: time_stamp
