@@ -66,7 +66,7 @@ fn main() {
                 let local: DateTime<Local> = Local::now();
                 print!(". ");
                 io::stdout().flush().unwrap();      
-                if let Err(e) = writeln!(file, "CPU%:{:.02}  TimeStamp:{:?}",percent_cpu,
+                if let Err(e) = writeln!(file, "CPU%:{:>2.2}  TimeStamp:{:?}",percent_cpu,
                 local.format("%Y-%m-%dT%H:%M:%S").to_string()) {
                     println!("Couldn't write to file: {}", e);
                 }
