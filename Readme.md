@@ -33,3 +33,7 @@ Please Enter a Process ID (Leave Blank to Monitor this application):
 
 Data is written to file data/<pid>_<time_stamp>.txt
 
+## Data Format
+
+CPU utilization Data for <process_name>
+CPU%:<utilization_percentage>  TimeStamp:<time_stamp>

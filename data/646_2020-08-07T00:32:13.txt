@@ -1,4 +1,0 @@
-CPU Utilization Data for com.docker.hyper
-CPU%:7.64  TimeStamp:DelayedFormat { date: Some(2020-08-07), time: Some(00:32:14.278885), off: Some(("-04:00", -04:00)), items: StrftimeItems { remainder: "%Y-%m-%dT%H:%M:%S", recons: [] } }
-CPU%:9.71  TimeStamp:DelayedFormat { date: Some(2020-08-07), time: Some(00:32:15.284434), off: Some(("-04:00", -04:00)), items: StrftimeItems { remainder: "%Y-%m-%dT%H:%M:%S", recons: [] } }
-CPU%:6.62  TimeStamp:DelayedFormat { date: Some(2020-08-07), time: Some(00:32:16.287924), off: Some(("-04:00", -04:00)), items: StrftimeItems { remainder: "%Y-%m-%dT%H:%M:%S", recons: [] } }
