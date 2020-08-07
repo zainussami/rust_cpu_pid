@@ -13,62 +13,63 @@ fn delay(millis: u64) {
 }
 
 fn main() {
-
     const SAMPLES:u32 = 60;    // Number od Samples 
     const INTERVAL:u64 = 1000;    // Sampling Interval in Miliseconds
+    //Clear the Screen
+    print!("{}[2J", 27 as char);
+    loop{
+        //Display Message 
+        println!("RUST Process CPU Utilization");
+        println!("Please Enter a Process ID: ");
 
-    //Display Message 
-    println!("RUST Process CPU Utilization");
-    println!("Please Enter a Process ID: ");
-
-    //Get User Input For PID
-    let mut input_text = String::new();
-    io::stdin()
-        .read_line(&mut input_text)
-        .expect("failed to read from stdin");
-    let trimmed = input_text.trim();
-    match trimmed.parse::<u32>() {
-        //Check if the Input is Valid UnSigned 32 
-        Ok(pid) => {println!("your PID input: {}", pid);
-        //If the Process Doesn't Exist the program panics
-        let mut pid_proc = Process::new(pid).expect("Failed accessing process");
-        println!("Collecting CPU Utilization Data for {:.100}",pid_proc.name().unwrap());
-        
-        //Create a File to Write Output to
-        let local: DateTime<Local> = Local::now();      
-        let path_name = "data/".to_owned()  + &pid.to_string() +"_"+ 
-                        &local.format("%Y-%m-%dT%H:%M:%S").to_string() + &".txt".to_owned() ;
-        let path = Path::new(&path_name);
-        let display = path.display();
-            // Open a file in write-only mode, returns `io::Result<File>`
-        let mut file = match File::create(&path) {
-            Err(why) => panic!("couldn't create {}: {}", display, why),
-            Ok(file) => file,
-        };
-        //Create File Header with process Name
-        if let Err(e) = writeln!(file, "CPU Utilization Data for {:.100}",pid_proc.name().unwrap()) {
-            println!("Couldn't write to file: {}", e);
-        }
-        println!("Wrting to file {}", display);
-
-        let mut counter = 0;
-        while counter < SAMPLES { //Collect Data for 60 Seconds            
-            delay(INTERVAL);
-            let percent_cpu = pid_proc.cpu_percent().unwrap();      
-            let local: DateTime<Local> = Local::now();
-            print!(". ");
-            io::stdout().flush().unwrap();      
-            if let Err(e) = writeln!(file, "CPU%:{:.02}  TimeStamp:{:?}",percent_cpu,
-            local.format("%Y-%m-%dT%H:%M:%S").to_string()) {
+        //Get User Input For PID
+        let mut input_text = String::new();
+        io::stdin()
+            .read_line(&mut input_text)
+            .expect("failed to read from stdin");
+        let trimmed = input_text.trim();
+        match trimmed.parse::<u32>() {
+            //Check if the Input is Valid UnSigned 32 
+            Ok(pid) => {println!("your PID input: {}", pid);
+            //If the Process Doesn't Exist the program panics
+            let mut pid_proc = Process::new(pid).expect("Failed accessing process");
+            println!("Collecting CPU Utilization Data for {:.100}",pid_proc.name().unwrap());
+            
+            //Create a File to Write Output to
+            let local: DateTime<Local> = Local::now();      
+            let path_name = "data/".to_owned()  + &pid.to_string() +"_"+ 
+                            &local.format("%Y-%m-%dT%H:%M:%S").to_string() + &".txt".to_owned() ;
+            let path = Path::new(&path_name);
+            let display = path.display();
+                // Open a file in write-only mode, returns `io::Result<File>`
+            let mut file = match File::create(&path) {
+                Err(why) => panic!("couldn't create {}: {}", display, why),
+                Ok(file) => file,
+            };
+            //Create File Header with process Name
+            if let Err(e) = writeln!(file, "CPU Utilization Data for {:.100}",pid_proc.name().unwrap()) {
                 println!("Couldn't write to file: {}", e);
             }
-            counter +=1;
-        }
-    },
-        Err(..) => println!("This was not a Valid PID input: {}", trimmed),
-    };
+            println!("Wrting to file {}", display);
 
-
-
-
+            let mut counter = 0;
+            while counter < SAMPLES { //Collect Data for 60 Seconds            
+                delay(INTERVAL);
+                //Get CPU Utilization
+                let percent_cpu = pid_proc.cpu_percent().unwrap();  
+                // Get Local Date Time     
+                let local: DateTime<Local> = Local::now();
+                print!(". ");
+                io::stdout().flush().unwrap();      
+                if let Err(e) = writeln!(file, "CPU%:{:.02}  TimeStamp:{:?}",percent_cpu,
+                local.format("%Y-%m-%dT%H:%M:%S").to_string()) {
+                    println!("Couldn't write to file: {}", e);
+                }
+                counter +=1;
+            }
+            println!("Succesfully wrote to file: {}", display);
+        },
+            Err(..) => println!("This was not a Valid PID input: {}", trimmed),
+        };
+    }
 }
