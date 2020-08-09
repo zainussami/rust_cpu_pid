@@ -7,7 +7,7 @@ A Rust application that monitors the CPU utilization of a Process by PID
 Use Cargo to build the project
 
 ```bash
-cargo build
+cargo build --release
 ```
 
 ## Dependencies 
