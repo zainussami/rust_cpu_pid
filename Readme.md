@@ -22,10 +22,19 @@ chrono = "0.4"
 ## Usage
 
 ```bash
-cargo run
+    rust_cpu_pid [FLAGS] [OPTIONS]
+
+FLAGS:
+    -i, --interactive    Launches Interactive Mode
+    -h, --help           Prints help information
+    -V, --version        Prints version information
+
+OPTIONS:
+    -b, --batch <batch>    List of PIDs seperated by commas e.g. -b 646,323,55,665
 ```
 Once the console application starts, Enter a PID to monitor or leave blank and press enter to monitor the current process.
 
+Interactive Mode
 ```bash
 RUST Process CPU utilization
 Please Enter a Process ID (Leave Blank to Monitor this application): 

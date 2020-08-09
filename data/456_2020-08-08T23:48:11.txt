@@ -1,0 +1,7 @@
+CPU utilization Data for diagnostics_agen
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:12"
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:13"
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:14"
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:15"
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:16"
+CPU%:0.00  TimeStamp:"2020-08-08T23:48:17"
