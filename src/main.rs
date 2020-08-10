@@ -9,7 +9,6 @@ use clap::{Arg, App};
 use rusqlite::{params, Connection, Result};
 use rusqlite::NO_PARAMS;
 
-#[derive(Debug)]
 struct PidUtil {
     pid: u32,
     name: String,
@@ -29,7 +28,7 @@ fn delay(millis: u64) {
 fn display_welcome() {
         //Display Message 
         println!("RUST Process CPU utilization");
-        println!("Please Enter a Process ID (Leave Blank to Monitor this application): ");
+        println!("Please Enter Process IDs seperated by commas e.g. 646,456,345 (Leave Blank to Monitor this application)");
 
 }
 

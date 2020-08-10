@@ -41,10 +41,6 @@ Interactive Mode
 RUST Process CPU utilization
 Please Enter a Process ID (Leave Blank to Monitor this application): 
 ```
-
-Data is written to file data/pid_time_stamp.txt
-
 ## Data Format
 
-CPU utilization Data for process_name <br/>
-CPU%: utilization_percentage  TimeStamp: time_stamp
+Data is written to SQLite Database pid_data.db in the table pid_util.
