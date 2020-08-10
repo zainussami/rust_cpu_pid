@@ -5,9 +5,9 @@ use chrono::prelude::*;
 use std::process;
 use std::io;
 use std::io::Write;
-use clap::{Arg, App};
 use rusqlite::{params, Connection, Result};
 use rusqlite::NO_PARAMS;
+mod parser;
 
 struct PidUtil {
     pid: u32,
@@ -19,7 +19,6 @@ struct PidUtil {
 const SAMPLES:u32 = 60;    // Number of Samples 
 const INTERVAL:u64 = 1000;    // Sampling Interval in Miliseconds    
 
-
 fn delay(millis: u64) {
     let timeout = Duration::from_millis(millis);
     thread::sleep(timeout);
@@ -28,36 +27,9 @@ fn delay(millis: u64) {
 fn display_welcome() {
         //Display Message 
         println!("RUST Process CPU utilization");
-        println!("Please Enter Process IDs seperated by commas e.g. 646,456,345 (Leave Blank to Monitor this application)");
+        println!("Please Enter Process IDs seperated by commas 
+        e.g. 646,456,345 (Leave Blank to Monitor this application)");
 
-}
-
-//Command line parser using Clap
-fn console_parser()-> (bool,String) {
-    let matches = App::new("PID CPU Utilization")
-    .version("1.0.0")
-    .author("Zain Ansari <zainussami@gmail.com>")
-    .about("Monitors CPU Utilization")
-    .arg(Arg::with_name("batch")
-             .short("b")
-             .long("batch")
-             .takes_value(true)
-             .help("List of PIDs seperated by commas e.g. -b 646,323,55,665"))
-    .arg(Arg::with_name("interactive")
-             .short("i")
-             .long("interactive")
-             .takes_value(false)
-             .help("Launches Interactive Mode"))
-    .get_matches();
-    let mut interactive = false;
-    if matches.is_present("interactive") {
-        interactive = true;    
-    }    
-    let mut batch = "";
-    if matches.is_present("batch") {
-        batch = matches.value_of("batch").unwrap();
-    }    
-    (interactive,batch.to_string())
 }
 
 //Funtion Handle Errors in PID inputs (Valid Input is u32) 
@@ -67,8 +39,10 @@ fn parse_pids(reader: String) -> Vec<u32>{
         .into_iter()
         .map(|s| s.parse::<u32>())
         .partition(Result::is_ok);
-        let numbers: Vec<_> = numbers.into_iter().map(Result::unwrap).collect();
-        let errors: Vec<_> = errors.into_iter().map(Result::unwrap_err).collect();
+        let numbers: Vec<_> = numbers.into_iter().map(Result::unwrap)
+        .collect();
+        let errors: Vec<_> = errors.into_iter().map(Result::unwrap_err)
+        .collect();
         println!("Errors: {:?}", errors);
     numbers
 }
@@ -78,7 +52,8 @@ fn collect_pid_data(pid : &u32)-> Result<()>{
     let pid_proc = Process::new(*pid);
     match pid_proc {
         Ok(mut pid_acquired) => {
-            println!("Collecting CPU utilization Data for {:.100}", pid_acquired.name().unwrap());      
+            println!("Collecting CPU utilization Data for {:.100}", 
+            pid_acquired.name().unwrap());      
             let mut counter = 0;
             //Access Database
             let conn = Connection::open("pid_data.db")?;
@@ -103,7 +78,8 @@ fn collect_pid_data(pid : &u32)-> Result<()>{
                 )?;
                 counter +=1;
             }
-            println!("\nSuccesfully wrote to PID {} CPU Utilization Data to Database.", pid);
+            println!("\nSuccesfully wrote to PID {} CPU Utilization 
+            Data to Database.", pid);
         },
         //Thread Fails But does not Panic and Reports an error
         Err(error) => println!("{:?}", error),
@@ -135,7 +111,7 @@ fn check_database() {
 
 fn main() {
     
-    let (mode,pid_lists)= console_parser();
+    let (mode,pid_lists)= parser::console_parser();
     
     //Check Database Status
     check_database();
