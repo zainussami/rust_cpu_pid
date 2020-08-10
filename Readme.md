@@ -12,11 +12,13 @@ cargo build --release
 
 ## Dependencies 
 
-This implementation of process monitor depends on  [psutil](https://crates.io/crates/psutil) for getting process information and [chrono](https://crates.io/crates/chrono) for local time stamps.
+This implementation of process monitor depends on  [psutil](https://crates.io/crates/psutil) for getting process information, [chrono](https://crates.io/crates/chrono) for local time stamps, [rusqlite](https://crates.io/crates/rusqlite/) to write data to the database and [clap](https://crates.io/crates/clap) to parse command line input.
 
 ```bash
 psutil = "3.1.0"
 chrono = "0.4"
+clap = "2.33.2"
+rusqlite = "0.23.1"
 ```
 
 ## Usage

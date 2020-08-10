@@ -1,20 +1,28 @@
 use psutil::process::Process;
-use std::{thread, time};
+use std::thread;
 use std::time::Duration;
 use chrono::prelude::*;
-use std::io;
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
 use std::process;
+use std::io;
+use std::io::Write;
 use clap::{Arg, App};
+use rusqlite::{params, Connection, Result};
+use rusqlite::NO_PARAMS;
+
+#[derive(Debug)]
+struct PidUtil {
+    pid: u32,
+    name: String,
+    util: f64,
+    timestamp: String,
+}
 
 const SAMPLES:u32 = 60;    // Number of Samples 
 const INTERVAL:u64 = 1000;    // Sampling Interval in Miliseconds    
 
 
 fn delay(millis: u64) {
-    let timeout = time::Duration::from_millis(millis);
+    let timeout = Duration::from_millis(millis);
     thread::sleep(timeout);
 }
 
@@ -52,9 +60,6 @@ fn console_parser()-> (bool,String) {
     }    
     (interactive,batch.to_string())
 }
-fn interactive_mode(){
-
-}
 
 //Funtion Handle Errors in PID inputs (Valid Input is u32) 
 fn parse_pids(reader: String) -> Vec<u32>{
@@ -69,41 +74,124 @@ fn parse_pids(reader: String) -> Vec<u32>{
     numbers
 }
 
-fn print_mypid (pid : &u32){
+fn collect_pid_data(pid : &u32)-> Result<()>{
     //Error Handling Check if the process Exists
-    let mut pid_proc = Process::new(*pid);
-    let pid_proc = match pid_proc {
-        Ok(pid_acquired) => {
-            println!("Collecting CPU utilization Data for {:.100}", pid_acquired.name().unwrap());
-
+    let pid_proc = Process::new(*pid);
+    match pid_proc {
+        Ok(mut pid_acquired) => {
+            println!("Collecting CPU utilization Data for {:.100}", pid_acquired.name().unwrap());      
+            let mut counter = 0;
+            //Access Database
+            let conn = Connection::open("pid_data.db")?;
+            while counter < SAMPLES { //Collect Data for 60 Seconds  
+                delay(INTERVAL);
+                 
+                let local: DateTime<Local> = Local::now();  
+                let cpu_util = pid_acquired.cpu_percent().unwrap() as f64; 
+                print!(". ");
+                io::stdout().flush().unwrap();  
+                //Write to SQLite DB 
+                let me = PidUtil {
+                    pid: *pid,
+                    name: pid_acquired.name().unwrap(),
+                    timestamp: local.format("%Y-%m-%d %H:%M:%S").to_string(),
+                    util: cpu_util,
+                };
+                conn.execute(
+                    "INSERT INTO pid_util (pid, name, util, timestamp)
+                              VALUES (?1, ?2, ?3, ?4)",
+                    params![me.pid, me.name, me.util, me.timestamp],
+                )?;
+                counter +=1;
+            }
+            println!("\nSuccesfully wrote to PID {} CPU Utilization Data to Database.", pid);
         },
         //Thread Fails But does not Panic and Reports an error
         Err(error) => println!("{:?}", error),
     };
+    Ok(())
+}
 
+fn check_database() {
+    let conn = Connection::open("pid_data.db");
+    match conn {
+        Ok(conn_acquired) =>{println!("{:?}", conn_acquired);
+        let table =conn_acquired.execute(
+            "create table if not exists pid_util (
+                 pid integer,
+                 name text not null,
+                 util text,
+                 timestamp text
+             )",
+            NO_PARAMS,
+        );
+        match table{
+            Ok(table) =>println!("{:?}", table),
+            Err(error) => panic!("{:?}", error),
+        };    
+    },
+        Err(error) => panic!("{:?}", error),
+    };
 }
 
 fn main() {
-
+    
     let (mode,pid_lists)= console_parser();
+    
+    //Check Database Status
+    check_database();
+
     //Check the Mode
-    if mode == true{
+    if mode == true{  //Interactive Mode
+        //Clear the Screen
         print!("{}[2J", 27 as char);
         loop{
             display_welcome();
-            interactive_mode();
+            //Get User Input For PID
+            let mut input_text = String::new();
+            io::stdin()
+                .read_line(&mut input_text)
+                .expect("failed to read from stdin");
+            if input_text.len()<2 {
+                println!("My pid is {}", process::id());
+                input_text = process::id().to_string();
+            }
+            //Remove Newline Character
+            let new_input = input_text.replace("\n", "");
+            //Convert PID List from Strings
+            let vec = parse_pids(new_input);        
+            println!("Valid PIDs {:?} :", vec);
+            //Spawn Multiple Threads
+            let mut threads = Vec::new();
+            for thread_no in 0..vec.len() {
+                let int = vec[thread_no];
+                threads.push(thread::spawn(move || {
+                    let test = collect_pid_data(&int);
+                    match test{
+                        Ok(()) =>println!(""),
+                        Err(error) => panic!("{:?}", error),
+                    };   
+                }))
+            }
+            for t in threads {
+                t.join().unwrap();
+            }            
         }
     }
-    else{
-        //Convert PID List from Ints
-        //Spawn Multiple Threads
+    else{//Batch Mode
+        //Convert PID List from Strings
         let vec = parse_pids(pid_lists);        
         println!("Valid PIDs {:?} :", vec);
+        //Spawn Multiple Threads
         let mut threads = Vec::new();
         for thread_no in 0..vec.len() {
             let int = vec[thread_no];
             threads.push(thread::spawn(move || {
-                print_mypid(&int);
+                let test = collect_pid_data(&int);
+                match test{
+                    Ok(()) =>println!(""),
+                    Err(error) => panic!("{:?}", error),
+                };   
             }))
         }
         for t in threads {
