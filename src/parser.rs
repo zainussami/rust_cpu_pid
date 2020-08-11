@@ -9,7 +9,7 @@ pub fn console_parser()-> (bool,String) {
              .short("b")
              .long("batch")
              .takes_value(true)
-             .help("List of PIDs seperated by commas e.g. -b 646,323,55,665"))
+             .help("List of PIDs separated by commas e.g. -b 646,323,55,665"))
     .arg(Arg::with_name("interactive")
              .short("i")
              .long("interactive")

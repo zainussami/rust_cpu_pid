@@ -28,7 +28,7 @@ fn delay(millis: u64) {
 fn display_welcome() {
         //Display Message 
         println!("RUST Process CPU utilization");
-        println!("Please Enter Process IDs seperated by commas 
+        println!("Please Enter Process IDs separated by commas 
         e.g. 646,456,345 (Leave Blank to Monitor this application)");
 
 }
