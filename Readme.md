@@ -1,6 +1,6 @@
 # RUST CPU Utilization by PID
 
-A Rust application that monitors the CPU utilization of a Process by PID
+A Rust application that monitors the CPU utilization of Processes by PIDs
 
 ## Compile
 
@@ -42,5 +42,7 @@ RUST Process CPU utilization
 Please Enter a Process ID (Leave Blank to Monitor this application): 
 ```
 ## Data Format
+
+Please make sure SQLite 3 is installed on your system.
 
 Data is written to SQLite Database pid_data.db in the table pid_util.
